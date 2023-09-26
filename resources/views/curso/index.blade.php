@@ -8,7 +8,12 @@
     <title>CRUD AJAX</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        .error{
+            color: red
+        }
+    </style>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -31,11 +36,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Registrar curso</h5>
+                        <h5 class="modal-title" id="title_modal">Registrar curso</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="formulario_curso">
                         @csrf
+                        <input type="hidden" name="tipo_formulario" id="tipo_formulario" value="">
+                        <input type="hidden" name="id_curso_editar" id="id_curso_editar" value="">
                         <div class="modal-body">
                             <div class="card">
                                 <div class="card-body">
@@ -89,6 +96,9 @@
 
             // $("#contenido_tabla").append(tabla);
             $(".btn_agregar_curso").click(function() {
+                $("#title_modal").html('Registrar curso');
+                $("#tipo_formulario").val(1);
+                $("#id_curso_editar").val("");
                 console.log("AGREGAR CURSO");
             });
 
@@ -124,6 +134,8 @@
                 },
                 success: function(data) {
                     $("#contenido_tabla").html(data.html);
+                    btn_editar_curso();
+                    btn_eliminar_curso();
                 }
             });
         }
@@ -181,22 +193,68 @@
                             Swal.showLoading()
                             //const b = Swal.getHtmlContainer().querySelector('b')
                             timerInterval = setInterval(() => {
-                               // b.textContent = Swal.getTimerLeft()
+                                // b.textContent = Swal.getTimerLeft()
                             }, 100)
                         },
                         willClose: () => {
                             clearInterval(timerInterval)
                         }
                     }).then((confirmar) => {
-                       if(confirmar.isConfirmed || confirmar.dismiss === Swal.DismissReason.timer){
-                         $("#formulario_curso")[0].reset();
-                         $("#curso_modal").modal('hide');
-                         mostrar_lista_cursos();
-                       }
+                        if (confirmar.isConfirmed || confirmar.dismiss === Swal.DismissReason.timer) {
+                            $("#formulario_curso")[0].reset();
+                            $("#curso_modal").modal('hide');
+                            mostrar_lista_cursos();
+                        }
                     });
                 } else if (result.isDenied) {
                     Swal.fire('Error de registro', '', 'info')
                 }
+            })
+        }
+        //EDITAR CURSO
+        function btn_editar_curso() {
+            $("#tabla_cursos tbody").on('click', '.btn_editar_curso', function() {
+               let id_curso = $(this).attr('data-id-curso');
+               $("#tipo_formulario").val(2);
+                $("#id_curso_editar").val(id_curso);
+               /*console.log("ID_CURSO");
+               console.log(id_curso);*/
+               $.ajax({
+                type: 'POST',
+                url: '{{ route('curso.obtener_curso') }}',
+                data: {id_curso: id_curso},
+                dataType: 'json',
+                beforeSend: function() {
+                   /* $("#contenido_tabla").html(
+                        '<div class="cargando"><i class="fa-solid fa-spinner fa-5x"></i></div>');*/
+                },
+                error: function(data) {
+                    let errorJson = JSON.parse(data.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorJson.message,
+                        footer: '<a href="">Vuelva a intentarlo</a>'
+                    })
+                },
+                success: function(data) {
+                   console.log(data.curso);
+                   let curso = data.curso;
+                   $("#title_modal").html('Editar curso');
+                   $("#nombre_curso").val(curso.nombre_curso);
+                   $("#descripcion").val(curso.descripcion);
+                   $("#curso_modal").modal('show');
+                }
+            });
+            })
+        }
+
+         //ELIMINAR CURSO
+         function btn_eliminar_curso() {
+            $("#tabla_cursos tbody").on('click', '.btn_eliminar_curso', function() {
+               let id_curso = $(this).attr('data-id-curso');
+               console.log("ID_CURSO_ELIMINAR");
+               console.log(id_curso);
             })
         }
     </script>

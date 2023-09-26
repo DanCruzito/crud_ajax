@@ -23,4 +23,5 @@ Route::controller(CursoController::class)->group(function(){
   Route::get('curso-index','index')->name('curso.index');
   Route::post('lista-cursos','listar_cursos')->name('curso.lista');
   Route::post('registro-curso','registrar_curso')->name('curso.registrar');
+  Route::post('obtener-curso-por-id','obtener_curso_por_id')->name('curso.obtener_curso');
 });
