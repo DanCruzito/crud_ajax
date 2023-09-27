@@ -56,6 +56,16 @@
                                         <label for="descripcion" class="form-label">descripcion</label>
                                         <textarea class="form-control" name="descripcion" id="descripcion" cols="30" rows="2" required></textarea>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="nombre_curso" class="form-label">contraseña</label>
+                                        <input type="text" name="password" class="form-control" id="password"
+                                            required>
+                                    </div>
+                                    <div class="mb-3" style="display: none" id="opcion_nuevo_pass">
+                                        <label for="nombre_curso" class="form-label">Nueva contraseña</label>
+                                        <input type="password" name="nuevo_password" class="form-control" id="nuevo_password"
+                                            required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -100,6 +110,16 @@
                 $("#tipo_formulario").val(1);
                 $("#id_curso_editar").val("");
                 console.log("AGREGAR CURSO");
+            });
+            //password
+            $("#password").click(function(){//cambia
+              let pass = $("#password").val();
+              if(pass == 'ivana'){
+                $("#opcion_nuevo_pass").show();
+              }else{
+                $("#opcion_nuevo_pass").hide();
+                alert("incorrecto");
+              }
             });
 
             //VALIDACION
